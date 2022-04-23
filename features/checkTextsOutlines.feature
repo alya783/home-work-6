@@ -7,7 +7,7 @@ Feature: Navigation Look
     Examples:
       | selector                    | text           |
       | (//*[@class='nav-link'])[1] | Orders         |
-      | (//*[@class='nav-link'])[2] | Products       |
+      | (//*[@class='nav-link'])[2] |                |
       | (//*[@class='nav-link'])[4] | Reports        |
       | (//*[@class='nav-link'])[5] | Integrations   |
       | (//*[@class='nav-link'])[6] | Create User    |

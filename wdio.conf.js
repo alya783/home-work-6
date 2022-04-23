@@ -123,7 +123,7 @@ exports.config = {
         ['allure', {
             outputDir: 'allure-results',
             disableWebdriverStepsReporting: true,
-            // disableWebdriverScreenshotsReporting: true,
+            disableWebdriverScreenshotsReporting: false,
             useCucumberStepReporter: false,
         }]],
 
@@ -243,7 +243,11 @@ exports.config = {
      */
     afterTest: async function (test, context, { error, result, duration, passed, retries }) {
         if (!passed) {
-            await browser.takeScreenshot();
+            let cookies = await browser.getAllCookies();
+            const screen = await browser.takeScreenshot();
+            addAttachment('screenshot', Buffer(screen, 'base64'), 'image/png');
+            addAttachment('html', await $('html').getHTML(), 'text/html');
+            addAttachment('cookies', JSON.stringify(cookies), 'text/plain');
         }
     },
 
@@ -255,10 +259,17 @@ exports.config = {
         console.log(result.passed)
         console.log(result.passed)
         console.log(result.passed)
+        
         addDescription('TESTTESTTEST!!! <script>alert(123)</script>')
 
         if (!result.passed) {
             addDescription('TESTTESTTEST!!!<img src="https://s.keepmeme.com/files/en_posts/20200908/blurred-surprised-cat-meme-5b734a45210ef3b6657bcbe2831715fa.jpg">')
+
+            let cookies = await browser.getAllCookies();
+            const screen = await browser.takeScreenshot();
+            addAttachment('screenshot', Buffer(screen, 'base64'), 'image/png');
+            addAttachment('html', await $('html').getHTML(), 'text/html');
+            addAttachment('cookies', JSON.stringify(cookies), 'text/plain');
         }
         // await browser.reloadSession();
     },

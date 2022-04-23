@@ -2,10 +2,14 @@
 const { When, Then, Given } = require('@cucumber/cucumber');
 const YAML = require('yaml');
 const { Login } = require("../../src/PO/login.po");
+const { Navigation } = require("../../src/PO/navigation.po");
 const { CustomPage } = require("../../src/PO/custom_page.po");
 const { CustomPage2 } = require("../../src/PO/custom_page_2.po");
 const { Table } = require("../../src/PO/tables/table.po");
+const { Form } = require("../../src/PO/userForm.po");
+const { Subscribtion } = require("../../src/PO/subscribtion.po");
 const Subscribe = require('../../src/PO/forms/subscribe.model');
+const { addAttachment } = require('@wdio/allure-reporter').default;
 
 When(/^I go to "([^"]*)"$/, async function (url) {
     await browser.url(url);
@@ -28,8 +32,8 @@ When(/^I expect element: "([^"]*)" (text|value): "([^"]*)"$/, async function (se
         .toEqual(text)
 });
 
-When('I go to {string} menu item', function (item) {
-    // add implementation here
+When(/^I go to "([^"]*)" menu item$/, async function (item) {
+    await Navigation.getNavItem(item);
 });
 
 
@@ -80,4 +84,41 @@ When(/^I fill form:$/, async function (formYaml) {
         await el.set(formData[elModel.name]);
         await browser.pause(200);
     }
+});
+
+When(/^I fill user form "([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)"$/, async function(email, password, address1, address2, city, zip, description){
+    this.state.data = {
+    email: email, 
+    password: password,
+    address1: address1,
+    address2: address2,
+    city: city,
+    zip: zip,
+    description: description,
+   }
+
+    await Form.fillForm(email, password, address1, address2, city, zip, description);
+});
+
+When(/^I check user info on the line "([^"]*)"$/, async function (selector) {
+    await Form.checkForm(this.state.data, selector);
+});
+
+When(/^I fill subscribtion form "([^"]*)","([^"]*)","([^"]*)"$/, async function(year, user, description2){
+    this.state.subscribtion = {
+    years: year,
+    user: user,
+    description: description2,
+   }
+    
+   await Subscribtion.makeSubscription(year, user, description2);
+   addAttachment('user_info', this.state.data, 'application/json');
+});
+
+When(/^I check subscribtion on the line "([^"]*)"$/, async function (selector2) {
+    await Form.checkForm(this.state.subscribtion, selector2);
+});
+
+Then(/^I logout$/, async function () {
+    await $('//a[@title="Log out"]').click();
 });
